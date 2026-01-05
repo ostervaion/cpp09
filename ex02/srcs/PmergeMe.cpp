@@ -86,41 +86,135 @@ void PmergeMe::recursiveList(std::list<int> &list)
 	std::cout << "list" << std::endl;
 }
 
-void PmergeMe::recursiveVector(std::vector<int> &vec)
+std::vector<int> PmergeMe::getJacobNums(int size)
 {
-	std::vector<int>	main, pend;
-	int					num, ind, ind_pairs;
+	int	newNum, prevNum, beforePrev;
+	std::vector<int> secuence, edit;
 	std::vector<int>::const_iterator it;
-	t_pairs	pairs[vec.size() / 2];
-	t_pairs one_pair;
 
-	one_pair.big = 0;
-	one_pair.small = 0;
-	ind = 0;
-	ind_pairs = 0;
-	it = vec.begin();
-	while (it != vec.end())
+	prevNum = 1;
+	beforePrev = 1;
+	newNum = 0;
+	while (1)
 	{
-		if (ind == 0)
+		newNum = prevNum + 2 * beforePrev;
+		if (newNum > size)
+			break ;
+		secuence.push_back(newNum);
+		beforePrev = prevNum;
+		prevNum = newNum;
+	}
+	it = secuence.begin();
+	//use beforePrev as an int holder
+	while (it != secuence.end())
+	{
+		beforePrev = *it;
+		while (beforePrev > 1 && !isRepeated(edit, beforePrev))
 		{
-			ind++;
-			num = *it;
-			it++;
-			continue ;
-		}
-		if (ind % 2 == 1)
-		{
-			one_pair = new t_pairs;
-			pairs[ind_pairs] = one_pair;
-			if (*it > num)
-			{
-
-			}
+			edit.push_back(beforePrev);
+			beforePrev--;
 		}
 		it++;
 	}
-	if (!vec.empty() && it != vec.end())
+	if (edit.size() != size)
+	{
+		beforePrev = size;
+		while (beforePrev > 1 && !isRepeated(edit, beforePrev))
+		{
+			edit.push_back(beforePrev);
+			beforePrev--;
+		}
+	}
+	return (edit);
+}
 
+//main is the container where the chain is going to be inserted in order
+//pend are the numbers to insert
+//edit is the container with the jacobsthal numbers that tell us the numbers that must be inserted first
+//pairs shows the pairs that where made before to know the limit of the comparisons
+void sortPendIntoMain(std::vector<int> &main,std::vector<int> &pend, std::vector<int> &edit, t_pairs *pairs)
+{
+	std::vector<int>::const_iterator it, mainIt;
+	int ind, auxInd, pairAmount;
+	
+	pairAmount = main.size();
+	main.insert(main.begin(), pend.at(0));
+	it = edit.begin();
+	//comprobar los valores añadidos sin pareja
+	while (it != edit.end())
+	{
+		ind = 0;
+		mainIt = main.begin();
+		ind = 0;
+		for(mainIt = main.begin(); mainIt != main.end() && (pairAmount < *it || *mainIt != pairs[*it - 1].big); mainIt++) ind++;
+		auxInd = 0;
+		while (1)
+		{
+			//binary search
+			if (pairs[*it - 1].small > main.at(ind) && pairs[*it - 1].small < main.at(auxInd))
+			{
+				if (ind - auxInd <= 1)
+					break ;
+			}
+			if (main.at((auxInd + ind) / 2) < pairs[*it - 1].small)
+			{
+				//rigth
+				ind = (auxInd + ind) / 2;
+			}
+			else
+			{
+				//left
+				auxInd = (auxInd + ind) / 2;
+			}
+		}
+		main.insert(main.begin() + auxInd, pend.at(*it - 1));
+		it++;
+	}
+}
+
+void PmergeMe::recursiveVector(std::vector<int> &vec)
+{
+	std::vector<int>	main, pend;
+	int					num, ind;
+	std::vector<int>::const_iterator it;
+	t_pairs	pairs[vec.size() / 2];
+
+	ind = 0;
+	it = vec.begin();
+	while (it != vec.end())
+	{
+		if (ind % 2 == 0)
+			num = *it;
+		else
+		{
+			if (*it > num)
+			{
+				pairs[ind/2].big = *it;
+				pairs[ind/2].small = num;
+			}
+			else
+			{
+				pairs[ind/2].big = num;
+				pairs[ind/2].small = *it;
+			}
+		}
+		ind++;
+		it++;
+	}
+	for (int i = 0; i < vec.size() / 2 ; i++)
+	{
+		main.push_back(pairs[i].big);
+		pend.push_back(pairs[i].small);
+	}
+	if (ind % 2 == 1)
+		pend.push_back(num);
+	if (int i = vec.size(); i != 2 && i != 3)
+		recursiveVector(main);
+	//apply jacobsthal
+	std::vector<int> edit;
+	edit = getJacobNums(pend.size());
+	sortPendIntoMain(main, pend, edit, pairs);
+	vec = main;
 }
 
 const char *PmergeMe::ParseErrorException::what() const throw()

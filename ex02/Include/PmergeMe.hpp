@@ -23,7 +23,8 @@ class PmergeMe
 		static void recursiveList(std::list<int> &list);
 		static void printTimeDiff(struct timeval &begin, std::string cont, int amount);
 		static void fordJhonson(int argc, char **argv);
-
+		static std::vector<int>getJacobNums(int size);
+		static void sortPendIntoMain(std::vector<int> &main,std::vector<int> &pend, std::vector<int> &edit, t_pairs *pairs);
 	class ParseErrorException : public std::exception
 	{
 		virtual const char *what() const throw();
