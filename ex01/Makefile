@@ -11,9 +11,9 @@
 # **************************************************************************** #
 
 NAME	= RPN
-FLAGS	= -Wall -Wextra -Werror -std=c++98 -I Include -ggdb
+FLAGS	= -Wall -Wextra -Werror -std=c++98 -I Include
 SRC_DIR = srcs/
-SRCS	= $(SRC_DIR)main.cpp
+SRCS	= $(SRC_DIR)main.cpp $(SRC_DIR)RPN.cpp
 OBJS	= $(SRCS:.cpp=.o)
 CC		= c++
 

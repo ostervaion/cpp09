@@ -56,7 +56,7 @@ void BitcoinExchange::loadDatabase(const std::string &filename)
 {
 	std::ifstream file(filename.c_str());
 	if (!file.is_open())
-		throw FileCannotBeOpened();
+		throw InvalidDatabase();
 
 	std::string line;
 	bool firstLine = true;

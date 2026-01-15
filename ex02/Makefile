@@ -11,7 +11,7 @@
 # **************************************************************************** #
 
 NAME	= PmergeMe
-FLAGS	= -Wall -Wextra -Werror -std=c++98 -ggdb -I Include
+FLAGS	= -Wall -Wextra -Werror -std=c++98 -I Include
 SRC_DIR = srcs/
 SRCS	= $(SRC_DIR)main.cpp $(SRC_DIR)PmergeMe.cpp
 OBJS	= $(SRCS:.cpp=.o)
